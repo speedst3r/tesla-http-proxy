@@ -10,7 +10,7 @@ The built container listens on port 443 and expects the following to be mounted:
 | /config/tls.key | TLS private key for HTTPS endpoint |
 | /config/private.pem | Tesla app private key |
 
-This container listens on all IPs and has no authentication of its own - *you must use a reverse proxy with authentication* to prevent abuse and your Tesla developer app being blocked.
+This container listens on all IPs and has no authentication of its own - **you must use a reverse proxy with authentication** to prevent abuse and your Tesla developer app being blocked.
 
 This is for personal/proof-of-concept use and has not been extensively tested - you accept you use this at your own risk.
 
