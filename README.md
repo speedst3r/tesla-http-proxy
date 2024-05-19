@@ -14,6 +14,10 @@ This container listens on all IPs and has no authentication of its own - **you m
 
 This is for personal/proof-of-concept use and has not been extensively tested - you accept you use this at your own risk.
 
+## BLE container
+
+Tesla rate-limit the Fleet API to 50 requests per vehicle per day. This limits the number of calls that can be made to the API for use cases such as solar charging. In order to minimise the number of API requests, a patched version of the proxy to try BLE first before HTTPS is built when using `Dockerfile.ble` with your `docker build` command. The resultant container needs to be run with `--network=host` and `--cap-add=NET_ADMIN` in order to use the host's Bluetooth device.
+
 ## requirements
 
 - Tesla developer account (https://developer.tesla.com)

@@ -1,0 +1,31 @@
+*** vehicle-command/pkg/proxy/proxy.go.old      2024-05-19 13:48:00.943295086 +0800
+--- vehicle-command/pkg/proxy/proxy.go  2024-05-19 15:24:20.677571072 +0800
+***************
+*** 16,21 ****
+--- 16,22 ----
+        "github.com/teslamotors/vehicle-command/internal/log"
+        "github.com/teslamotors/vehicle-command/pkg/account"
+        "github.com/teslamotors/vehicle-command/pkg/cache"
++       "github.com/teslamotors/vehicle-command/pkg/connector/ble"
+        "github.com/teslamotors/vehicle-command/pkg/connector/inet"
+        "github.com/teslamotors/vehicle-command/pkg/protocol"
+        "github.com/teslamotors/vehicle-command/pkg/vehicle"
+***************
+*** 304,309 ****
+--- 305,320 ----
+                return nil, nil, err
+        }
+
++       // try to use BLE
++       conn, err := ble.NewConnection(ctx, vin)
++       if err == nil {
++               car, err := vehicle.NewVehicle(conn, p.commandKey, p.sessions)
++               if err == nil {
++                       return car, commandToExecuteFunc, nil
++               }
++       }
++
++       // if above fails, use HTTP
+        car, err := acct.GetVehicle(ctx, vin, p.commandKey, p.sessions)
+        if err != nil || car == nil {
+                writeJSONError(w, http.StatusInternalServerError, err)

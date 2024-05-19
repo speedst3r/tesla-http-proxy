@@ -1,0 +1,24 @@
+FROM golang:1.22 AS builder
+
+ENV GOPATH=/usr/local
+
+COPY tesla-proxy-use-ble-first.patch tesla-proxy-use-ble-first.patch
+
+RUN apt update && \
+    apt install -y patch && \
+    git clone https://github.com/teslamotors/vehicle-command/ && \
+    cd vehicle-command && \
+    patch -p1 --ignore-whitespace < ../tesla-proxy-use-ble-first.patch && \
+    go get ./... && \
+    go build ./... && \
+    go install ./...
+
+FROM debian:bookworm-slim
+
+COPY --from=builder /usr/local/bin/tesla-http-proxy /usr/local/bin/tesla-http-proxy
+COPY --from=builder /usr/local/bin/tesla-control /usr/local/bin/tesla-control
+COPY startproxy.sh /usr/local/bin/startproxy.sh
+
+EXPOSE 443
+
+ENTRYPOINT [ "/usr/local/bin/startproxy.sh" ]
